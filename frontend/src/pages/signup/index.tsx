@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Image from 'next/image';
 import styles from '../../../styles/home.module.scss';
 
-import logoImg from '../../../public/logo.svg';
+import logoImg from '../../../public/logo.png';
 
 import { Input } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
@@ -20,13 +20,14 @@ export default function SignUp() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [cellNumber, setCellNumber] = useState('')
 
   const [loading, setLoading] = useState(false);
 
   async function handleSignUp(event: FormEvent){
     event.preventDefault();
 
-    if(name === '' || email === '' || password === ''){
+    if(name === '' || email === '' || password === '' || cellNumber === '' ){
       toast.error("Preencha todos os campos")
       return;
     }
@@ -36,7 +37,8 @@ export default function SignUp() {
     let data = {
       name,
       email,
-      password
+      password, 
+      cellNumber
     }
 
     await signUp(data)
@@ -51,7 +53,7 @@ export default function SignUp() {
       <title>Faça seu cadastro agora!</title> 
     </Head>
     <div className={styles.containerCenter}>
-      <Image src={logoImg} alt="Logo Sujeito Pizzaria" />
+      <Image src={logoImg} alt="Logo Times Futebol" />
 
       <div className={styles.login}>
         <h1>Criando sua conta</h1>
@@ -65,10 +67,17 @@ export default function SignUp() {
           />
 
           <Input
-            placeholder="Digite seu email"
+            placeholder="teste@teste.com"
             type="text"
             value={email}
             onChange={ (e) => setEmail(e.target.value) }
+          />
+          
+          <Input
+            placeholder="(99) 99999-9999"
+            type="text"
+            value={cellNumber}
+            onChange={ (e) => setCellNumber(e.target.value) }
           />
 
           <Input

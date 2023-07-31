@@ -20,6 +20,7 @@ type UserProps = {
   id: string;
   name: string;
   email: string;
+  cellNumber: string;
 }
 
 type SignInProps = {
@@ -31,6 +32,7 @@ type SignUpProps = {
   name: string;
   email: string;
   password: string;
+  cellNumber: string;
 }
 
 type AuthProviderProps = {
@@ -62,12 +64,13 @@ export function AuthProvider({ children }: AuthProviderProps){
       api
       .get('/me')
       .then(response => {
-        const { id, name, email } = response.data;
+        const { id, name, email, cellNumber } = response.data;
 
         setUser({
           id,
           name,
-          email
+          email,
+          cellNumber
         })
 
       })
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps){
       })
       // console.log(response.data);
 
-      const { id, name, token } = response.data;
+      const { id, name, token, cellNumber } = response.data;
 
       setCookie(undefined, '@nextauth.token', token, {
         maxAge: 60 * 60 * 24 * 30, // Expirar em 1 mes
@@ -99,6 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps){
         id,
         name,
         email,
+        cellNumber
       })
 
       //Passar para proximas requisiçoes o nosso token
@@ -117,13 +121,14 @@ export function AuthProvider({ children }: AuthProviderProps){
   }
 
 
-  async function signUp({ name, email, password}: SignUpProps){
+  async function signUp({ name, email, password, cellNumber}: SignUpProps){
     try{
       
       const response = await api.post('/users', {
         name,
         email,
-        password
+        password,
+        cellNumber
       })
 
       toast.success("Conta criada com sucesso!")
