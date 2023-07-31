@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// criar uma migration: yarn prisma migrate dev
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String
+  password String
+  cellNumber String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("users")
+}
+
+model Team{
+  id String @id @default(uuid())
+  name String
+  logo String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("teams")
+  players Player[]
+}
+
+model Player{
+  id String @id @default(uuid())
+  name String
+  profile String
+  position String
+  birthday String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  team Team @relation(fields: [team_id], references: [id])
+
+  @@map("players")
+  team_id String
+  gameDetails GameDetail[]
+}
+
+model Game{
+  id String @id @default(uuid())
+  day String
+  name String?
+   draft Boolean @default(true)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("games")
+  gameDetails GameDetail[]
+}
+
+model GameDetail{
+  id String @id @default(uuid())
+  score Int
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  game Game @relation(fields: [game_id], references: [id])
+  player Player @relation(fields: [player_id], references: [id])
+
+  @@map("gameDetails")
+  game_id String
+  player_id String
+
+}
