@@ -8,47 +8,45 @@ import { FiRefreshCcw } from 'react-icons/fi'
 
 import { setupAPIClient } from '../../services/api'
 
-import { ModalOrder } from '../../components/ModalOrder'
+import { ModalOrder } from '../../components/ModalGame'
 
 import Modal from 'react-modal';
 
-type OrderProps = {
+type GameProps = {
   id: string;
-  table: string | number;
-  status: boolean;
-  draft: boolean;
+  day: string;
   name: string | null;
+  draft: boolean;
 }
 
 interface HomeProps{
-  orders: OrderProps[];
+  games: GameProps[];
 }
 
-export type OrderItemProps = {
+export type GameDetailProps = {
   id: string;
-  amount: number;
-  order_id: string;
-  product_id: string;
-  product:{
+  score: number;
+  game_id: string;
+  player_id: string;
+  player:{
     id: string;
     name: string;
-    description: string;
-    price: string;
-    banner: string;
+    profile: string;
+    position: string;
+    birthday: string;
   }
-  order:{
+  game:{
     id: string;
-    table: string | number;
-    status: boolean;
+    day: string | number;
     name: string | null;
   }
 }
 
-export default function Dashboard({ orders }: HomeProps){
+export default function Dashboard({ games }: HomeProps){
 
-  const [orderList, setOrderList] = useState(orders || [])
+  const [gameList, setGameList] = useState(games || [])
 
-  const [modalItem, setModalItem] = useState<OrderItemProps[]>()
+  const [modalGameDetail, setModalGameDetail] = useState<GameDetailProps[]>()
   const [modalVisible, setModalVisible] = useState(false);
 
 
@@ -60,36 +58,36 @@ export default function Dashboard({ orders }: HomeProps){
    
      const apiClient = setupAPIClient(); 
 
-     const response = await apiClient.get('/order/detail', {
+     const response = await apiClient.get('/game/detail', {
        params:{
-        order_id: id,
+        game_id: id,
        } 
      })
 
-     setModalItem(response.data);
+     setModalGameDetail(response.data);
      setModalVisible(true);
 
   }
 
 
-  async function handleFinishItem(id: string){
-    const apiClient = setupAPIClient();
-    await apiClient.put('/order/finish', {
-      order_id: id,
-    })
+  // async function handleFinishItem(id: string){
+  //   const apiClient = setupAPIClient();
+  //   await apiClient.put('/order/finish', {
+  //     order_id: id,
+  //   })
 
-    const response = await apiClient.get('/orders');
+  //   const response = await apiClient.get('/orders');
 
-    setOrderList(response.data);
-    setModalVisible(false);
-  }
+  //   setOrderList(response.data);
+  //   setModalVisible(false);
+  // }
 
 
   async function handleRefreshOrders(){
     const apiClient = setupAPIClient();
 
-    const response = await apiClient.get('/orders')
-    setOrderList(response.data);
+    const response = await apiClient.get('/games')
+    setGameList(response.data);
 
   }
 
@@ -98,7 +96,7 @@ export default function Dashboard({ orders }: HomeProps){
   return(
     <>
     <Head>
-      <title>Painel - Sujeito Pizzaria</title>
+      <title>Painel - JOGOS ENTRE AMIGOS</title>
     </Head>
     <div>
       <Header/>
@@ -106,7 +104,7 @@ export default function Dashboard({ orders }: HomeProps){
       <main className={styles.container}>
 
         <div className={styles.containerHeader}>
-          <h1>Últimos pedidos</h1>
+          <h1>Últimos Jogos</h1>
           <button onClick={handleRefreshOrders}>
             <FiRefreshCcw size={25} color="#3fffa3"/>
           </button>
@@ -114,17 +112,17 @@ export default function Dashboard({ orders }: HomeProps){
 
         <article className={styles.listOreders}>
 
-          {orderList.length === 0 && (
+          {gameList.length === 0 && (
             <span className={styles.emptyList}>
-              Nenhum pedido aberto foi encontrado...
+              Nenhum Jogo adicionado foi encontrado...
             </span>
           )}
 
-          {orderList.map( item => (
-            <section  key={item.id} className={styles.orderItem}> 
-              <button onClick={ () => handleOpenModalView(item.id) }>
+          {gameList.map( gameDetail => (
+            <section  key={gameDetail.id} className={styles.orderItem}> 
+              <button onClick={ () => handleOpenModalView(gameDetail.id) }>
                 <div className={styles.tag}></div>
-                <span>Mesa {item.table}</span>
+                <span>Dia do Jogo {gameDetail.day}</span>
               </button>
             </section>
           ))}
@@ -137,8 +135,7 @@ export default function Dashboard({ orders }: HomeProps){
         <ModalOrder
           isOpen={modalVisible}
           onRequestClose={handleCloseModal}
-          order={modalItem}
-          handleFinishOrder={ handleFinishItem }
+          game={modalGameDetail}
         />
       )}
 
@@ -150,13 +147,13 @@ export default function Dashboard({ orders }: HomeProps){
 export const getServerSideProps = canSSRAuth(async (ctx) => {
   const apiClient = setupAPIClient(ctx);
 
-  const response = await apiClient.get('/orders');
+  const response = await apiClient.get('/games');
   //console.log(response.data);
 
 
   return {
     props: {
-      orders: response.data
+      games: response.data
     }
   }
 })

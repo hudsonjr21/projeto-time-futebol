@@ -14,16 +14,20 @@ export function Header(){
     <header className={styles.headerContainer}>
       <div className={styles.headerContent}>
         <Link href="/dashboard" legacyBehavior>
-          <img src="/logo.png" width={190} height={60} />
+          <img src="/logo.png" width={800} height={100} />
         </Link>
 
         <nav className={styles.menuNav}>
-          <Link href="/category" legacyBehavior>
-            <a>Categoria</a>
+          <Link href="/" legacyBehavior>
+            <a>Home</a>
           </Link>
 
-          <Link href="/product" legacyBehavior>
-            <a>Cardapio</a>
+          <Link href="/team" legacyBehavior>
+            <a>Time</a>
+          </Link>
+
+          <Link href="/player" legacyBehavior>
+            <a>Jogador</a>
           </Link>   
 
           <button onClick={signOut}>

@@ -2,17 +2,16 @@ import Modal from 'react-modal';
 import styles from './style.module.scss';
 
 import { FiX } from 'react-icons/fi'
-
-import { OrderItemProps } from '../../pages/dashboard'
+import { IoMdFootball} from 'react-icons/io'
+import { GameDetailProps } from '@/src/pages/dashboard';
 
 interface ModalOrderProps{
   isOpen: boolean;
   onRequestClose: () => void;
-  order: OrderItemProps[];
-  handleFinishOrder: (id: string) => void;
+  game: GameDetailProps[];
 }
 
-export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder  }: ModalOrderProps){
+export function ModalOrder({ isOpen, onRequestClose, game }: ModalOrderProps){
 
   const customStyles = {
     content:{
@@ -22,7 +21,7 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder  }
       right: 'auto',
       padding: '30px',
       transform: 'translate(-50%, -50%)',
-      backgroundColor: '#1d1d2e'
+      backgroundColor: '#393e46'
     }
   };
 
@@ -39,31 +38,26 @@ export function ModalOrder({ isOpen, onRequestClose, order, handleFinishOrder  }
     className="react-modal-close"
     style={{ background: 'transparent', border:0 }}
     >
-      <FiX size={45} color="#f34748" />
+      <FiX size={30} color="#f34748" />
     </button>
 
     <div className={styles.container}>
 
-      <h2>Detalhes do pedido</h2>
+      <h2>Detalhes do Jogo</h2>
       <span className={styles.table}>
-        Mesa: <strong>{order[0].order.table}</strong>
+        <strong>{game[0].game.day}</strong> 
       </span>
 
-      {order.map( item => (
-        <section key={item.id} className={styles.containerItem}>
-          <span>{item.amount} - <strong>{item.product.name}</strong></span>
-          <span className={styles.description}>
-            {item.product.description}
-          </span>
+      {game.map((gameDetail) => (
+        <section key={gameDetail.id} className={styles.containerItem}>
+          <div className={styles.playerNameContainer}>
+            {Array.from({ length: gameDetail.score }).map((_, index) => (
+              <IoMdFootball key={index} color="#FFF" size={24} />
+            ))}
+            <strong>{gameDetail.player.name}</strong>
+          </div>
         </section>
       ))}
-
-
-      <button className={styles.buttonOrder} onClick={ () => handleFinishOrder(order[0].order_id) }>
-        Concluir pedido
-      </button>
-
-
     </div>
 
    </Modal>

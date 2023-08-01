@@ -9,14 +9,24 @@
   margin: 1rem 0;
 }
 
-.containerItem{
+.containerItem {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   margin: 1rem 0;
+  font-size: 1.2rem; 
+
+  svg {
+    margin-right: 8px; 
+  }
 
   strong{
     color: var(--green-900)
   }
+  .playerNameContainer {
+    display: flex; /* Adiciona flex para alinhar os ícones e o texto do jogador */
+    align-items: center; /* Alinha verticalmente os ícones e o texto do jogador */
+  }
+
 }
 
 .description{

@@ -11,26 +11,26 @@ import { setupAPIClient } from '../../services/api'
 
 import { toast } from 'react-toastify'
 
-type ItemProps = {
+type GameDetailProps = {
   id: string;
   name: string;
 }
 
-interface CategoryProps{
-  categoryList: ItemProps[];
+interface TeamProps{
+  teamList: GameDetailProps[];
 }
 
-export default function Product({ categoryList }: CategoryProps){
+export default function Player({ teamList }: TeamProps){
 
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [description, setDescription] = useState('');
+  const [position, setPosition] = useState('');
+  const [birthday, setBirthday] = useState('');
 
   const [avatarUrl, setAvatarUrl] = useState('');
   const [imageAvatar, setImageAvatar] = useState(null);
 
-  const [categories, setCategories] = useState(categoryList || [])
-  const [categorySelected, setCategorySelected] = useState(0)
+  const [teams, setTeams] = useState(teamList || [])
+  const [teamSelected, setTeamSelected] = useState(0)
 
 
   function handleFile(e: ChangeEvent<HTMLInputElement>){
@@ -55,11 +55,11 @@ export default function Product({ categoryList }: CategoryProps){
   }
 
   //Quando você seleciona uma nova categoria na lista
-  function handleChangeCategory(event){
+  function handleChangeTeam(event){
     // console.log("POSICAO DA CATEGORIA SELECIONADA ", event.target.value)
    //console.log('Categoria selecionada ', categories[event.target.value])
 
-    setCategorySelected(event.target.value)
+    setTeamSelected(event.target.value)
 
   }
 
@@ -69,22 +69,27 @@ export default function Product({ categoryList }: CategoryProps){
     try{
       const data = new FormData();
 
-      if(name === '' || price === '' || description === '' || imageAvatar === null){
+      if(name === '' || position === '' || birthday === '' || imageAvatar === null){
         toast.error("Preencha todos os campos!");
         return;
       }
 
+      if (teamSelected === 0) {
+        toast.error("Selecione um time antes de cadastrar!");
+        return;
+      }
+
       data.append('name', name);
-      data.append('price', price);
-      data.append('description', description);
-      data.append('category_id', categories[categorySelected].id);
+      data.append('position', position);
+      data.append('birthday', birthday);
+      data.append('team_id', teams[teamSelected].id);
       data.append('file', imageAvatar);
 
       const apiClient = setupAPIClient();
 
-      await apiClient.post('/product', data);
+      await apiClient.post('/player', data);
 
-      toast.success('Cadastrado com sucesso!')
+      toast.success('Jogador cadastrado com sucesso!')
 
     }catch(err){
       console.log(err);
@@ -92,8 +97,8 @@ export default function Product({ categoryList }: CategoryProps){
     }
 
     setName('');
-    setPrice('');
-    setDescription('')
+    setPosition('');
+    setBirthday('')
     setImageAvatar(null);
     setAvatarUrl('');
 
@@ -102,13 +107,13 @@ export default function Product({ categoryList }: CategoryProps){
   return(
     <>
       <Head>
-        <title>Novo produto - Sujeito Pizzaria</title>
+        <title>Novo Jogador - JOGOS ENTRE AMIGOS</title>
       </Head>
       <div>
         <Header/>
 
         <main className={styles.container}>
-          <h1>Novo produto</h1>
+          <h1>Novo Jogador</h1>
 
           <form className={styles.form} onSubmit={handleRegister}>
 
@@ -123,7 +128,7 @@ export default function Product({ categoryList }: CategoryProps){
                   <img 
                     className={styles.preview}
                     src={avatarUrl}
-                    alt="Foto do produto" 
+                    alt="Foto do jogador" 
                     width={250}
                     height={250}
                   />
@@ -132,11 +137,12 @@ export default function Product({ categoryList }: CategoryProps){
             </label>
 
 
-            <select value={categorySelected} onChange={handleChangeCategory} >
-                {categories.map( (item, index) => {
+            <select value={teamSelected} onChange={handleChangeTeam} >
+            <option value={0}>Selecione um time...</option>
+                {teams.map( (gameDetail, index) => {
                   return(
-                    <option key={item.id} value={index}>
-                      {item.name}
+                    <option key={gameDetail.id} value={index + 1}>
+                      {gameDetail.name}
                     </option>
                   )
                 })}
@@ -144,7 +150,7 @@ export default function Product({ categoryList }: CategoryProps){
 
             <input 
             type="text"
-            placeholder="Digite o nome do produto"
+            placeholder="Digite o nome do jogador"
             className={styles.input}
             value={name}
             onChange={ (e) => setName(e.target.value) }
@@ -152,17 +158,17 @@ export default function Product({ categoryList }: CategoryProps){
 
             <input 
             type="text"
-            placeholder="Preço do produto"
+            placeholder="Posição do jogador"
             className={styles.input}
-            value={price}
-            onChange={ (e) => setPrice(e.target.value) }
+            value={position}
+            onChange={ (e) => setPosition(e.target.value) }
             />      
 
-            <textarea 
-              placeholder="Descreva seu produto..."
+            <input 
+              placeholder="Data Nascimento **/**/****"
               className={styles.input}
-              value={description}
-              onChange={ (e) => setDescription(e.target.value) }
+              value={birthday}
+              onChange={ (e) => setBirthday(e.target.value) }
             /> 
 
             <button className={styles.buttonAdd} type="submit">
@@ -181,12 +187,12 @@ export default function Product({ categoryList }: CategoryProps){
 export const getServerSideProps = canSSRAuth(async (ctx) => {
   const apliClient = setupAPIClient(ctx)
 
-  const response = await apliClient.get('/category');
+  const response = await apliClient.get('/team');
   //console.log(response.data);
 
   return {
     props: {
-      categoryList: response.data
+      teamList: response.data
     }
   }
 })
