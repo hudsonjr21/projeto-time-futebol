@@ -22,6 +22,11 @@ export function Header(){
             <a>Home</a>
           </Link>
 
+          <Link href="/game" legacyBehavior>
+            <a>Jogo</a>
+          </Link>   
+
+
           <Link href="/team" legacyBehavior>
             <a>Time</a>
           </Link>

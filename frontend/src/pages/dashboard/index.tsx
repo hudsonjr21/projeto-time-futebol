@@ -8,7 +8,7 @@ import { FiRefreshCcw } from 'react-icons/fi'
 
 import { setupAPIClient } from '../../services/api'
 
-import { ModalOrder } from '../../components/ModalGame'
+import { ModalGame } from '../../components/ModalGame'
 
 import Modal from 'react-modal';
 
@@ -132,7 +132,7 @@ export default function Dashboard({ games }: HomeProps){
       </main>
 
       { modalVisible && (
-        <ModalOrder
+        <ModalGame
           isOpen={modalVisible}
           onRequestClose={handleCloseModal}
           game={modalGameDetail}

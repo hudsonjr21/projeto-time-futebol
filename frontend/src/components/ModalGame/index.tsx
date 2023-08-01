@@ -5,13 +5,13 @@ import { FiX } from 'react-icons/fi'
 import { IoMdFootball} from 'react-icons/io'
 import { GameDetailProps } from '@/src/pages/dashboard';
 
-interface ModalOrderProps{
+interface ModalGameProps{
   isOpen: boolean;
   onRequestClose: () => void;
   game: GameDetailProps[];
 }
 
-export function ModalOrder({ isOpen, onRequestClose, game }: ModalOrderProps){
+export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
 
   const customStyles = {
     content:{

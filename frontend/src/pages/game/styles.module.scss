@@ -1,0 +1,100 @@
+.container {
+    flex: 1;
+    background-color: #1d1d2e;
+    padding: 5% 4%;
+  }
+  
+  .header {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 12px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  
+  .title {
+    font-size: 30px;
+    font-weight: bold;
+    color: #fff;
+    margin-right: 14px;
+  }
+  
+  .input {
+    background-color: #101026;
+    border-radius: 4px;
+    width: 100%;
+    height: 40px;
+    margin-bottom: 12px;
+    justify-content: center;
+    padding: 0 8px;
+    color: #fff;
+    font-size: 20px;
+  }
+  
+  .qtdContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .qtdText {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .actions {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .buttonAdd {
+    width: 20%;
+    background-color: #3fd1ff;
+    border-radius: 4px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .buttonText {
+    color: #101026;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .button {
+    background-color: #3fffa3;
+    border-radius: 4px;
+    height: 40px;
+    width: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .listItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #3fffa3;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  
+  .itemName {
+    color: #101026;
+    font-size: 18px;
+  }
+  
+  .itemAmount {
+    color: #101026;
+    font-size: 18px;
+  }
+  
