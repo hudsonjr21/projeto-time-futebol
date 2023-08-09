@@ -15,7 +15,7 @@ import Modal from 'react-modal';
 type GameProps = {
   id: string;
   day: string;
-  name: string | null;
+  numberGame: string | number;
   draft: boolean;
 }
 
@@ -38,7 +38,7 @@ export type GameDetailProps = {
   game:{
     id: string;
     day: string | number;
-    name: string | null;
+    numberGame: string | number;
   }
 }
 
@@ -58,10 +58,8 @@ export default function Dashboard({ games }: HomeProps){
    
      const apiClient = setupAPIClient(); 
 
-     const response = await apiClient.get('/game/detail', {
-       params:{
-        game_id: id,
-       } 
+     const response = await apiClient.get('/game/detail?game_id=${id}', {
+      
      })
 
      setModalGameDetail(response.data);

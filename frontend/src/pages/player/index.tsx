@@ -18,19 +18,18 @@ type GameDetailProps = {
 
 interface TeamProps{
   teamList: GameDetailProps[];
+  positions: GameDetailProps[]
 }
 
-export default function Player({ teamList }: TeamProps){
+export default function Player({ teamList, positions }: TeamProps){
 
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const [birthday, setBirthday] = useState('');
-
   const [avatarUrl, setAvatarUrl] = useState('');
   const [imageAvatar, setImageAvatar] = useState(null);
+  const [team, setTeam] = useState('');
 
-  const [teams, setTeams] = useState(teamList || [])
-  const [teamSelected, setTeamSelected] = useState(0)
 
 
   function handleFile(e: ChangeEvent<HTMLInputElement>){
@@ -54,35 +53,21 @@ export default function Player({ teamList }: TeamProps){
 
   }
 
-  //Quando você seleciona uma nova categoria na lista
-  function handleChangeTeam(event){
-    // console.log("POSICAO DA CATEGORIA SELECIONADA ", event.target.value)
-   //console.log('Categoria selecionada ', categories[event.target.value])
-
-    setTeamSelected(event.target.value)
-
-  }
-
   async function handleRegister(event: FormEvent){
     event.preventDefault();
 
     try{
       const data = new FormData();
 
-      if(name === '' || position === '' || birthday === '' || imageAvatar === null){
+      if(name === '' || position === '' || birthday === '' || imageAvatar === null || team === ''){
         toast.error("Preencha todos os campos!");
         return;
       }
 
-      if (teamSelected === 0) {
-        toast.error("Selecione um time antes de cadastrar!");
-        return;
-      }
-
       data.append('name', name);
-      data.append('position', position);
+      data.append('position_id', position);
       data.append('birthday', birthday);
-      data.append('team_id', teams[teamSelected].id);
+      data.append('team_id', team);
       data.append('file', imageAvatar);
 
       const apiClient = setupAPIClient();
@@ -91,17 +76,20 @@ export default function Player({ teamList }: TeamProps){
 
       toast.success('Jogador cadastrado com sucesso!')
 
-    }catch(err){
-      console.log(err);
-      toast.error("Ops erro ao cadastrar!")
+      setName('');
+      setPosition('');
+      setBirthday('');
+      setImageAvatar(null);
+      setAvatarUrl('');
+      setTeam('');
+
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.error) {
+        toast.error(err.response.data.error); // Exibe a mensagem de erro do back
+      } else {
+        toast.error('Ops erro ao cadastrar!');
+      }
     }
-
-    setName('');
-    setPosition('');
-    setBirthday('')
-    setImageAvatar(null);
-    setAvatarUrl('');
-
   }
 
   return(
@@ -136,16 +124,15 @@ export default function Player({ teamList }: TeamProps){
 
             </label>
 
-
-            <select value={teamSelected} onChange={handleChangeTeam} >
-            <option value={0}>Selecione um time...</option>
-                {teams.map( (gameDetail, index) => {
-                  return(
-                    <option key={gameDetail.id} value={index + 1}>
-                      {gameDetail.name}
-                    </option>
-                  )
-                })}
+            <select value={team} onChange={(e) => setTeam(e.target.value)}>
+              <option value="">Selecione um time...</option>
+              {teamList.map((team) => {
+                return (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                );
+              })}
             </select>
 
             <input 
@@ -156,16 +143,17 @@ export default function Player({ teamList }: TeamProps){
             onChange={ (e) => setName(e.target.value) }
             />
 
-            <input 
-            type="text"
-            placeholder="Posição do jogador"
-            className={styles.input}
-            value={position}
-            onChange={ (e) => setPosition(e.target.value) }
-            />      
+             <select value={position} onChange={(e) => setPosition(e.target.value)}>
+              <option value="">Selecione a posição do jogador...</option>
+              {positions.map((position) => (
+                <option key={position.id} value={position.id}>
+                  {position.name}
+                </option>
+              ))}
+            </select>
 
             <input 
-              placeholder="Data Nascimento **/**/****"
+              type="date"
               className={styles.input}
               value={birthday}
               onChange={ (e) => setBirthday(e.target.value) }
@@ -185,14 +173,15 @@ export default function Player({ teamList }: TeamProps){
 }
 
 export const getServerSideProps = canSSRAuth(async (ctx) => {
-  const apliClient = setupAPIClient(ctx)
+  const apiClient = setupAPIClient(ctx);
 
-  const response = await apliClient.get('/team');
-  //console.log(response.data);
+  const teamResponse = await apiClient.get('/team');
+  const positionResponse = await apiClient.get('/position');
 
   return {
     props: {
-      teamList: response.data
-    }
-  }
-})
+      teamList: teamResponse.data,
+      positions: positionResponse.data,
+    },
+  };
+});

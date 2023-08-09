@@ -46,16 +46,6 @@ export default function Team(){
       return;
     }
 
-    // const apiClient = setupAPIClient();
-    // await apiClient.post('/team', {
-    //   name: name
-    // })
-
-    // toast.success('Time cadastrado com sucesso!')
-    // setName('');
-    // setImageAvatar(null);
-    // setAvatarUrl('');
-
       data.append('name', name);
       data.append('file', imageAvatar);
 
@@ -65,15 +55,17 @@ export default function Team(){
 
       toast.success('Time cadastrado com sucesso!')
 
-    }catch(err){
-      console.log(err);
-      toast.error("Ops erro ao cadastrar!")
+      setName('');
+      setImageAvatar(null);
+      setAvatarUrl('');
+
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.error) {
+        toast.error(err.response.data.error); // Exibe a mensagem de erro do backend
+      } else {
+        toast.error("Ops, erro ao cadastrar!");
+      }
     }
-
-    setName('');
-    setImageAvatar(null);
-    setAvatarUrl('');
-
   }
 
 

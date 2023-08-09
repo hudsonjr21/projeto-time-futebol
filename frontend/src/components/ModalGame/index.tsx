@@ -45,10 +45,10 @@ export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
 
       <h2>Detalhes do Jogo</h2>
       <span className={styles.table}>
-        <strong>{game[0].game.day}</strong> 
+        <strong>{game[0].game.numberGame}</strong> 
       </span>
 
-      {game.map((gameDetail) => (
+      {game.map( gameDetail => (
         <section key={gameDetail.id} className={styles.containerItem}>
           <div className={styles.playerNameContainer}>
             {Array.from({ length: gameDetail.score }).map((_, index) => (

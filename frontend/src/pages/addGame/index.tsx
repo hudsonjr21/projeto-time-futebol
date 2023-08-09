@@ -1,198 +1,203 @@
-import { useState, FormEvent, useEffect } from 'react'
+import { useState, FormEvent, useEffect } from 'react';
 import Head from 'next/head';
 import styles from './styles.module.scss';
-import {Header} from '../../components/Header'
-import { canSSRAuth } from '../../utils/canSSRAuth'
-import { setupAPIClient } from '../../services/api'
-import { toast } from 'react-toastify'
+import { Header } from '../../components/Header';
+import { canSSRAuth } from '../../utils/canSSRAuth';
+import { setupAPIClient } from '../../services/api';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 
 type GameDetailProps = {
-    id: string;
-    name: string;
-  }
-  
-  interface PropsSever{
-    teamList: GameDetailProps[];
-    playerList: GameDetailProps[];
-  }
+  id: string;
+  name: string;
+};
 
-export default function addGame( { teamList, playerList }: PropsSever ){
+interface PropsServer {
+  teamList: GameDetailProps[];
+}
 
-  const [name, setName] = useState('');
-  const [position, setPosition] = useState('');
-  const [birthday, setBirthday] = useState('');
+function formatDate(dateString: string): string {
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+}
 
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [imageAvatar, setImageAvatar] = useState(null);
+export default function addGame({ teamList }: PropsServer) {
+  const router = useRouter();
 
-  const [teams, setTeams] = useState(teamList || [])
-  const [teamSelected, setTeamSelected] = useState(0)
-  const [players, setPlayer] = useState(playerList || [])
-  const [playerSelected, setPlayerSelected] = useState(0)
+  const [team, setTeam] = useState('');
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [playerListByTeam, setPlayerListByTeam] = useState([]);
+  const [score, setScore] = useState('');
+  const [player, setPlayer] = useState('');
+  const [numberGame, setNumberGame] = useState('');
+  const [day, setDay] = useState('');
 
-
-  useEffect (() => {
-    async function loadPlayer() {
-      if (!teamSelected) return;
-
-      try {
-        const apiClient = setupAPIClient();
-        
-        const response = await apiClient.get('/team/player', {
-          params: {
-            team_id: teamSelected,
-          },
-        });
-
-        setPlayer(response.data);
-        setPlayerSelected(response.data[0]);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      }
+  async function loadPlayersByTeam(teamId) {
+    try {
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get(`/team/player?team_id=${teamId}`);
+      return response.data;
+    } catch (err) {
+      return [];
     }
-
-    loadPlayer();
-  }, [teamSelected]);
-
-
-  //Quando você seleciona uma nova time na lista
-  function handleChangeTeam(event){
-    setTeamSelected(event.target.value)
-
   }
 
-  
-  //Quando você seleciona uma novo jogador da lista
-  function handleChangePlayer(event){
-    setPlayerSelected(event.target.value)
-
-  }
-
-  async function handleRegister(event: FormEvent){
+  async function handleRegister(event: FormEvent) {
     event.preventDefault();
 
-    try{
-      const data = new FormData();
 
-      if(name === '' || position === '' || birthday === '' || imageAvatar === null){
-        toast.error("Preencha todos os campos!");
+    try {
+      if (team === '' || selectedPlayers.length === 0) {
+        toast.error('Preencha todos os campos!');
         return;
       }
 
-      if (teamSelected === 0) {
-        toast.error("Selecione um time antes de cadastrar!");
-        return;
-      }
-
-      data.append('name', name);
-      data.append('position', position);
-      data.append('birthday', birthday);
-      data.append('team_id', teams[teamSelected].id);
-      data.append('player_id', players[playerSelected].id);
-      data.append('file', imageAvatar);
+      const data = {
+        team_id: team,
+        players: selectedPlayers,
+        numberGame: parseInt(numberGame),
+        day,
+      };
 
       const apiClient = setupAPIClient();
+      await apiClient.post('game/add', data);
 
-      await apiClient.post('/player', data);
-
-      toast.success('Jogador cadastrado com sucesso!')
-
-    }catch(err){
-      console.log(err);
-      toast.error("Ops erro ao cadastrar!")
+      toast.success('Jogo adicionado com sucesso!');
+      setTeam('');
+      setSelectedPlayers([]);
+      setNumberGame('');
+      setDay('');
+    } catch (err) {
+      toast.error('Ops erro ao cadastrar!');
     }
-
-    setName('');
-    setPosition('');
-    setBirthday('')
-    setImageAvatar(null);
-    setAvatarUrl('');
-
   }
 
-  return(
+  async function handleAddPlayer() {
+    if (selectedPlayers.find((p) => p.player === player)) {
+      toast.error('Jogador já foi adicionado.');
+      return;
+    }
+  
+    if (!player || !score) {
+      toast.error('Preencha todos os campos.');
+      return;
+    }
+  
+    setSelectedPlayers([
+      ...selectedPlayers,
+      { player, score: Number(score) }, // Convertendo score para número
+    ]);
+    setPlayer('');
+    setScore('');
+  }
+  
+
+  useEffect(() => {
+    if (team) {
+      loadPlayersByTeam(team)
+      .then((players) => {
+        setPlayerListByTeam(players);
+      });
+    }
+  }, [team]);
+
+  useEffect(() => {
+    const { query } = router;
+    const { numberGame: queryNumberGame, day: queryDay } = query;
+
+    if (queryNumberGame && queryDay) {
+      setNumberGame(queryNumberGame as string);
+      setDay(formatDate(queryDay as string)); //Formatando a data aqui
+    }
+
+  }, [router.query]);
+
+  return (
     <>
       <Head>
         <title>Detalhes Jogo - JOGOS ENTRE AMIGOS</title>
       </Head>
       <div>
-        <Header/>
+        <Header />
 
         <main className={styles.container}>
-          <h1>Detalhes do Jogo</h1>
+
+          <h1>Detalhes do Jogo - N° {numberGame} - {day}</h1>
 
           <form className={styles.form} onSubmit={handleRegister}>
 
-            <select value={teamSelected} onChange={handleChangeTeam} >
-            <option value={0}>Selecione um time...</option>
-                {teams.map( (gameDetail, index) => {
-                  return(
-                    <option key={gameDetail.id} value={index + 1}>
-                      {gameDetail.name}
-                    </option>
-                  )
-                })}
+            <select
+              value={team}
+              onChange={(e) => {
+                setTeam(e.target.value);
+              }}
+            >
+              <option value="">Selecione um time...</option>
+              {teamList.map((team) => {
+                return (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                );
+              })}
             </select>
 
-            <select value={playerSelected} onChange={handleChangePlayer}>
-                <option value={0}>Selecione um Jogador...</option>
-                {players.map((playerDetail, index) => {
-                    return (
-                    <option key={playerDetail.id} value={index + 1}>
-                        {playerDetail.name}
-                    </option>
-                    );
-                })}
+            <select value={player} onChange={(e) => setPlayer(e.target.value)}>
+              <option value="">Selecione um jogador...</option>
+              {playerListByTeam.map((player) => {
+                return (
+                  <option key={player.id} value={player.id}>
+                    {player.name}
+                  </option>
+                );
+              })}
             </select>
 
-            <input 
-            type="text"
-            placeholder="Digite o nome do jogador"
-            className={styles.input}
-            value={name}
-            onChange={ (e) => setName(e.target.value) }
+            <input
+              type="number"
+              placeholder="Quantidade de gols"
+              className={styles.input}
+              value={score}
+              onChange={(e) => setScore(e.target.value)}
             />
 
-            <input 
-            type="text"
-            placeholder="Posição do jogador"
-            className={styles.input}
-            value={position}
-            onChange={ (e) => setPosition(e.target.value) }
-            />      
+            <button
+              type="button"
+              className={styles.buttonAdd}
+              onClick={handleAddPlayer}
+            >
+              Adicionar Jogador
+            </button>
 
-            <input 
-              placeholder="Data Nascimento **/**/****"
-              className={styles.input}
-              value={birthday}
-              onChange={ (e) => setBirthday(e.target.value) }
-            /> 
+            <div className={styles.playersList}>
+              <h2>Jogadores Adicionados</h2>
+              <ul>
+                {selectedPlayers.map((playerData, index) => (
+                  <li key={index}>
+                    {playerData.player} - Gols: {playerData.score}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <button className={styles.buttonAdd} type="submit">
-              Cadastrar  
-            </button>   
-
+              Finalizar Jogo
+            </button>
           </form>
-
         </main>
-
       </div>
     </>
-  )
+  );
 }
 
-  export const getServerSideProps = canSSRAuth(async (ctx) => {
-    const apliClient = setupAPIClient(ctx);
-  
-    const teamResponse = await apliClient.get('/team');
-  
-    return {
-      props: {
-        teamList: teamResponse.data
-      }
-    };
-  });
-  
-  
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+  const apiClient = setupAPIClient(ctx);
 
-  
+  const teamResponse = await apiClient.get('/team');
+
+  return {
+    props: {
+      teamList: teamResponse.data,
+    },
+  };
+});
