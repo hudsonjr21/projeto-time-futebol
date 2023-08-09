@@ -3,13 +3,14 @@ import { CreateGameService } from '../../services/game/CreateGameService';
 
 class CreateGameController{
   async handle(req: Request, res: Response){
-    const { day, name } = req.body;
+    const { numberGame, day } = req.body;
 
     const createGameService = new CreateGameService();
 
     const game = await createGameService.execute({
+      numberGame,
       day,
-      name,
+
     });
 
     return res.json(game);

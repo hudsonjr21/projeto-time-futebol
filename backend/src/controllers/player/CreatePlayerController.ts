@@ -4,7 +4,7 @@ import { CreatePlayerService } from '../../services/player/CreatePlayerService'
 
 class CreatePlayerController{
   async handle(req: Request, res: Response){
-    const { name, position, birthday, team_id } = req.body;
+    const { name, position_id, birthday, team_id } = req.body;
 
     const createPlayerService = new CreatePlayerService();
 
@@ -17,7 +17,7 @@ class CreatePlayerController{
       const player = await createPlayerService.execute({
         name,
         profile,
-        position,
+        position_id,
         birthday,
         team_id
       });

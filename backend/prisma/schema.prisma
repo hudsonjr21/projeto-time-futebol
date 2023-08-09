@@ -39,23 +39,24 @@ model Player{
   id String @id @default(uuid())
   name String
   profile String
-  position String
   birthday String
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
   team Team @relation(fields: [team_id], references: [id])
+  position Position @relation(fields: [position_id], references: [id])
 
   @@map("players")
   team_id String
+  position_id String
   gameDetails GameDetail[]
 }
 
 model Game{
   id String @id @default(uuid())
+  numberGame Int
   day String
-  name String?
-   draft Boolean @default(true)
+  draft Boolean @default(true)
 
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
@@ -78,4 +79,15 @@ model GameDetail{
   game_id String
   player_id String
 
+}
+
+model Position {
+  id String @id @default(uuid())
+  name String
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("positions")
+  players Player[]
 }

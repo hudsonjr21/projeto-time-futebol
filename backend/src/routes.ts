@@ -22,6 +22,8 @@ import { RemoveGameController } from './controllers/game/RemoveGameController';
 import { RemoveGameDetailController } from './controllers/game/RemoveGameDetailController';
 import { SendGameController } from './controllers/game/SendGameController';
 import { ListGamesController } from './controllers/game/ListGamesController';
+import { CreatePositionController } from './controllers/position/CreatePositionController';
+import { ListPositionController } from './controllers/position/ListPositionController';
 
 const router = Router();
 
@@ -29,19 +31,19 @@ const upload = multer(uploadConfig.upload("./tmp"));
 
 //-- ROTAS USER --
 router.post('/users', new CreateUserController().handle)
-
 router.post('/session', new AuthUserController().handle)
-
 router.get('/me', isAuthenticated,  new DetailuserController().handle )
 
 //-- ROTAS TEAM
 router.post('/team', isAuthenticated, upload.single('file'), new CreateTeamController().handle )
-
 router.get('/team', isAuthenticated, new ListTeamController().handle )
+
+//-- ROTAS POSITION
+router.post('/position', isAuthenticated, new CreatePositionController().handle )
+router.get('/position', isAuthenticated, new ListPositionController().handle )
 
 //-- ROTAS PLAYER
 router.post('/player', isAuthenticated, upload.single('file'), new CreatePlayerController().handle )
-
 router.get('/team/player', isAuthenticated, new ListByTeamController().handle )
 
 //-- ROTAS GAME
@@ -56,4 +58,4 @@ router.put('/game/send', isAuthenticated, new SendGameController().handle )
 router.get('/games', isAuthenticated, new ListGamesController().handle )
 router.get('/game/detail', isAuthenticated, new DetailGameController().handle )
 
-export { router }; 
+export { router };
