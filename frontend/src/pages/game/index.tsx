@@ -11,6 +11,7 @@ export default function Game() {
   
   const [day, setDay] = useState('');
   const [numberGame, setNumberGame] = useState('');
+  const [id, setId] = useState('');
   const router = useRouter();
 
   async function handleRegister(event: FormEvent){
@@ -28,11 +29,12 @@ export default function Game() {
       };
   
       const apiClient = setupAPIClient();
-  
-      await apiClient.post('/game', data);
+      const response = await apiClient.post('/game', data);
+      const createdGameId = response.data.id;
   
       // Redireciona para a próxima página
-      router.push(`/addGame?numberGame=${numberGame}&day=${day}`);
+      router.push(`/addGame?numberGame=${numberGame}&day=${day}&id=${createdGameId}`);
+      setId('');
       setDay('');
       setNumberGame('');
 

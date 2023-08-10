@@ -60,7 +60,24 @@
     font-weight: bold;
     color: var(--dark-700);
   }
+  .input2{
+    border-radius: 0.3rem;
+    margin-bottom: 1rem;
+    color: var(--white);
+    background-color: var(--dark-900);
+    border:1px solid var(--gray-100);
+    height: 40px;
+    padding: 0 0.5rem;
   
+  }
+ .buttonAdd2{
+  width: 40px;
+  height: 30px;
+  background-color: #3fd1ff;
+  border-radius: 4px;
+  justify-content: center;
+  align-items: center;
+  }
   
   .labelAvatar{
     width: 100%;
@@ -96,4 +113,44 @@
     height: 100%;
     object-fit: cover;
     border-radius: 0.3rem;
+  }
+
+  .containerList {
+    background-color: #101026;
+    font-weight: bold;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    margin-bottom: 12px;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 4px;
+    border-width: 0.3px;
+    border-color: #8a8a8a;
+
+    h2{
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    ul{
+      list-style-type: none;
+    }
+    .playerNameContainer {
+      display: flex; /* Adiciona flex para alinhar os ícones e o texto do jogador */
+      align-items: center; /* Alinha verticalmente os ícones e o texto do jogador */
+    }
+
+    svg {
+      margin-right: 2px; 
+    }
+  
+    strong{
+      color: var(--green-900);
+      margin-right: 10px;
+    }
+  }
+  
+  .item {
+    color: #fff;
   }

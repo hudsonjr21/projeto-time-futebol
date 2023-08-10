@@ -6,10 +6,16 @@ import { canSSRAuth } from '../../utils/canSSRAuth';
 import { setupAPIClient } from '../../services/api';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+import { IoMdFootball } from 'react-icons/io';
 
 type GameDetailProps = {
   id: string;
   name: string;
+};
+
+type PlayerData = {
+  player_id: string;
+  score: number;
 };
 
 interface PropsServer {
@@ -21,16 +27,21 @@ function formatDate(dateString: string): string {
   return `${day}/${month}/${year}`;
 }
 
-export default function addGame({ teamList }: PropsServer) {
+export default function addGame({ teamList}: PropsServer) {
   const router = useRouter();
 
   const [team, setTeam] = useState('');
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
-  const [playerListByTeam, setPlayerListByTeam] = useState([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<PlayerData[]>([]);
+  const [playerListByTeam, setPlayerListByTeam] = useState<GameDetailProps[]>([]);
   const [score, setScore] = useState('');
   const [player, setPlayer] = useState('');
   const [numberGame, setNumberGame] = useState('');
   const [day, setDay] = useState('');
+  const [id, setId] = useState('');
+  const [items, setItems] = useState<PlayerData[]>([]);
+  const [playerNames, setPlayerNames] = useState({});
+  const [selectedPlayerNames, setSelectedPlayerNames] = useState({});
+
 
   async function loadPlayersByTeam(teamId) {
     try {
@@ -42,72 +53,88 @@ export default function addGame({ teamList }: PropsServer) {
     }
   }
 
-  async function handleRegister(event: FormEvent) {
-    event.preventDefault();
-
-
-    try {
-      if (team === '' || selectedPlayers.length === 0) {
-        toast.error('Preencha todos os campos!');
-        return;
-      }
-
-      const data = {
-        team_id: team,
-        players: selectedPlayers,
-        numberGame: parseInt(numberGame),
-        day,
-      };
-
-      const apiClient = setupAPIClient();
-      await apiClient.post('game/add', data);
-
-      toast.success('Jogo adicionado com sucesso!');
-      setTeam('');
-      setSelectedPlayers([]);
-      setNumberGame('');
-      setDay('');
-    } catch (err) {
-      toast.error('Ops erro ao cadastrar!');
-    }
-  }
-
   async function handleAddPlayer() {
-    if (selectedPlayers.find((p) => p.player === player)) {
+    if (selectedPlayers.find(p => p.player_id === player)) {
       toast.error('Jogador já foi adicionado.');
       return;
     }
-  
+
     if (!player || !score) {
       toast.error('Preencha todos os campos.');
       return;
     }
-  
+
+    const playerName = playerListByTeam.find(p => p.id === player)?.name || '';
+    setSelectedPlayerNames(prevNames => ({
+      ...prevNames,
+      [player]: playerName,
+    }));
+
     setSelectedPlayers([
       ...selectedPlayers,
-      { player, score: Number(score) }, // Convertendo score para número
+      { player_id: player, score: Number(score) },
     ]);
     setPlayer('');
     setScore('');
   }
+
+  async function handleAdd() {
+    try {
+      const apiClient = setupAPIClient();
   
+      const data = {
+        game_id: id,
+        players: selectedPlayers,
+      };
+  
+      const response = await apiClient.post('game/add', data);
+  
+      const newItem = {
+        id: response.data.id,
+        player_id: selectedPlayers[0].player_id, // Use player_id
+        game_id: id,
+        score: selectedPlayers[0].score,
+      };
+  
+      setItems(oldArray => [...oldArray, newItem]);
+
+      toast.success('Jogo salvo!');
+      setPlayer('');
+      setScore('');
+      setTeam('');
+
+      router.push('/dashboard')
+
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.error) {
+        toast.error(err.response.data.error); // Exibe a mensagem de erro do back
+      } else {
+        toast.error('Ops erro ao adicionar!');
+      }
+    }
+  }
 
   useEffect(() => {
     if (team) {
-      loadPlayersByTeam(team)
-      .then((players) => {
+      loadPlayersByTeam(team).then(players => {
         setPlayerListByTeam(players);
+        const namesDict = {};
+        players.forEach(player => {
+          namesDict[player.id] = player.name;
+        });
+        setPlayerNames(namesDict);
       });
     }
   }, [team]);
 
   useEffect(() => {
     const { query } = router;
-    const { numberGame: queryNumberGame, day: queryDay } = query;
+    const { numberGame: queryNumberGame, day: queryDay, id: queryId } = query;
 
     if (queryNumberGame && queryDay) {
       setNumberGame(queryNumberGame as string);
-      setDay(formatDate(queryDay as string)); //Formatando a data aqui
+      setDay(formatDate(queryDay as string));
+      setId(queryId as string);
     }
 
   }, [router.query]);
@@ -124,7 +151,7 @@ export default function addGame({ teamList }: PropsServer) {
 
           <h1>Detalhes do Jogo - N° {numberGame} - {day}</h1>
 
-          <form className={styles.form} onSubmit={handleRegister}>
+          <form className={styles.form} >
 
             <select
               value={team}
@@ -163,24 +190,32 @@ export default function addGame({ teamList }: PropsServer) {
 
             <button
               type="button"
-              className={styles.buttonAdd}
+              className={styles.buttonAdd2}
               onClick={handleAddPlayer}
-            >
-              Adicionar Jogador
+            > +
             </button>
 
-            <div className={styles.playersList}>
-              <h2>Jogadores Adicionados</h2>
-              <ul>
+            <div className={styles.containerList}>
+              <h2>Gols do Jogo</h2>
+              <ul className={styles.list}>
                 {selectedPlayers.map((playerData, index) => (
-                  <li key={index}>
-                    {playerData.player} - Gols: {playerData.score}
+                  <li key={index} className={styles.item}>
+                    <div className={styles.playerNameContainer}>
+                    <strong>{selectedPlayerNames[playerData.player_id]}</strong>
+                      {Array.from({ length: playerData.score }).map((_, index) => (
+                        <IoMdFootball key={index} color="#FFF" size={24} />
+                      ))}
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <button className={styles.buttonAdd} type="submit">
+            <button 
+            className={styles.buttonAdd} 
+            type="button"
+            onClick={handleAdd}
+            >
               Finalizar Jogo
             </button>
           </form>

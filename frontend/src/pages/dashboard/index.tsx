@@ -42,6 +42,11 @@ export type GameDetailProps = {
   }
 }
 
+function formatDate(dateString: string): string {
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+}
+
 export default function Dashboard({ games }: HomeProps){
 
   const [gameList, setGameList] = useState(games || [])
@@ -120,7 +125,7 @@ export default function Dashboard({ games }: HomeProps){
             <section  key={gameDetail.id} className={styles.orderItem}> 
               <button onClick={ () => handleOpenModalView(gameDetail.id) }>
                 <div className={styles.tag}></div>
-                <span>Dia do Jogo {gameDetail.day}</span>
+                <span>Dia do Jogo {formatDate(gameDetail.day as string)}</span>
               </button>
             </section>
           ))}
