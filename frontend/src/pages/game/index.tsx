@@ -7,11 +7,22 @@ import { toast } from 'react-toastify';
 import { canSSRAuth } from '@/src/utils/canSSRAuth';
 import { useRouter } from 'next/router';
 
-export default function Game() {
+type GameDetailProps = {
+  id: string;
+  name: string;
+}
+
+interface TeamProps{
+  teamList: GameDetailProps[];
+}
+
+export default function Game({ teamList }: TeamProps) {
   
   const [day, setDay] = useState('');
   const [numberGame, setNumberGame] = useState('');
   const [id, setId] = useState('');
+  const [homeTeam, setHomeTeam] = useState('');
+  const [awayTeam, setAwayTeam] = useState('');
   const router = useRouter();
 
   async function handleRegister(event: FormEvent){
@@ -26,6 +37,8 @@ export default function Game() {
       const data = {
         numberGame: parseInt(numberGame), // Converter para inteiro
         day,
+        homeTeam,
+        awayTeam, 
       };
   
       const apiClient = setupAPIClient();
@@ -33,10 +46,12 @@ export default function Game() {
       const createdGameId = response.data.id;
   
       // Redireciona para a próxima página
-      router.push(`/addGame?numberGame=${numberGame}&day=${day}&id=${createdGameId}`);
+      router.push(`/addGame?numberGame=${numberGame}&day=${day}&id=${createdGameId}&homeTeam=${homeTeam}&awayTeam=${awayTeam}`);
       setId('');
       setDay('');
       setNumberGame('');
+      setHomeTeam('');
+      setAwayTeam('');
 
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
@@ -59,6 +74,8 @@ export default function Game() {
           <h1>Novo Jogo</h1>
 
           <form className={styles.form} onSubmit={handleRegister}>
+
+        <div className={styles.inputGroup}>
           <input
               type="number"
               placeholder="N° do Jogo"
@@ -74,6 +91,27 @@ export default function Game() {
               value={day}
               onChange={(e) => setDay(e.target.value)}
             />
+        </div>
+
+          <div className={styles.selectGroup}>
+                <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)}>
+                  <option value="">Selecione time da casa...</option>
+                  {teamList.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)}>
+                  <option value="">Selecione time visitante...</option>
+                  {teamList.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
+          </div>
 
             <button className={styles.buttonAdd} type="submit">
               Avançar
@@ -86,9 +124,13 @@ export default function Game() {
 }
 
 export const getServerSideProps = canSSRAuth(async (ctx) => {
+  const apiClient = setupAPIClient(ctx);
 
-    return {
-      props: {}
-    }
-  
-  })
+  const teamResponse = await apiClient.get('/team');
+
+  return {
+    props: {
+      teamList: teamResponse.data,
+    },
+  };
+});

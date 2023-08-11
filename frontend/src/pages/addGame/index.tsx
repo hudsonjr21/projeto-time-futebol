@@ -41,6 +41,8 @@ export default function addGame({ teamList}: PropsServer) {
   const [items, setItems] = useState<PlayerData[]>([]);
   const [playerNames, setPlayerNames] = useState({});
   const [selectedPlayerNames, setSelectedPlayerNames] = useState({});
+  const [homeTeam, setHomeTeam] = useState('');
+  const [awayTeam, setAwayTeam] = useState('');
 
 
   async function loadPlayersByTeam(teamId) {
@@ -98,12 +100,11 @@ export default function addGame({ teamList}: PropsServer) {
   
       setItems(oldArray => [...oldArray, newItem]);
 
-      toast.success('Jogo salvo!');
       setPlayer('');
       setScore('');
       setTeam('');
 
-      router.push('/dashboard')
+      router.push(`/score?homeTeam=${homeTeam}&awayTeam=${awayTeam}`);
 
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
@@ -129,14 +130,25 @@ export default function addGame({ teamList}: PropsServer) {
 
   useEffect(() => {
     const { query } = router;
-    const { numberGame: queryNumberGame, day: queryDay, id: queryId } = query;
+    const {
+      numberGame: queryNumberGame,
+      day: queryDay,
+      id: queryId,
+      homeTeam: queryHome,
+      awayTeam: queryAway,
+    } = query;
 
     if (queryNumberGame && queryDay) {
       setNumberGame(queryNumberGame as string);
       setDay(formatDate(queryDay as string));
       setId(queryId as string);
-    }
 
+      // Buscar os nomes dos times a partir dos IDs
+      const homeTeamName = teamList.find(team => team.id === queryHome)?.name || '';
+      const awayTeamName = teamList.find(team => team.id === queryAway)?.name || '';
+      setHomeTeam(homeTeamName);
+      setAwayTeam(awayTeamName);
+    }
   }, [router.query]);
 
   return (
@@ -149,7 +161,8 @@ export default function addGame({ teamList}: PropsServer) {
 
         <main className={styles.container}>
 
-          <h1>Detalhes do Jogo - N° {numberGame} - {day}</h1>
+          <h3>JOGO N° {numberGame} - {day}</h3>
+          <h1> {homeTeam} x {awayTeam}</h1>
 
           <form className={styles.form} >
 
@@ -216,7 +229,7 @@ export default function addGame({ teamList}: PropsServer) {
             type="button"
             onClick={handleAdd}
             >
-              Finalizar Jogo
+              Avançar
             </button>
           </form>
         </main>
