@@ -24,6 +24,8 @@ import { SendGameController } from './controllers/game/SendGameController';
 import { ListGamesController } from './controllers/game/ListGamesController';
 import { CreatePositionController } from './controllers/position/CreatePositionController';
 import { ListPositionController } from './controllers/position/ListPositionController';
+import { CreateScoreController } from './controllers/score/CreateScoreController';
+import { ListScoreController } from './controllers/score/ListScoreController';
 
 const router = Router();
 
@@ -57,5 +59,9 @@ router.put('/game/send', isAuthenticated, new SendGameController().handle )
 
 router.get('/games', isAuthenticated, new ListGamesController().handle )
 router.get('/game/detail', isAuthenticated, new DetailGameController().handle )
+
+//-- ROTAS SCORE
+router.post('/score', isAuthenticated, new CreateScoreController().handle )
+router.get('/score', isAuthenticated, new ListScoreController().handle )
 
 export { router };

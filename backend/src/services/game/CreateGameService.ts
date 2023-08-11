@@ -3,10 +3,12 @@ import prismaClient from "../../prisma";
 interface GameRequest{
   numberGame: number;
   day: string;
+  homeTeam: string;
+  awayTeam: string;
 }
 
 class CreateGameService{
-  async execute({ numberGame, day}: GameRequest ){
+  async execute({ numberGame, day, homeTeam, awayTeam}: GameRequest ){
 
     const existingGame = await prismaClient.game.findFirst({
       where: {
@@ -22,6 +24,9 @@ class CreateGameService{
       data:{
         numberGame,
         day,
+        home_team_id: homeTeam,
+        away_team_id: awayTeam,
+
       }
     })
 

@@ -33,6 +33,9 @@ model Team{
 
   @@map("teams")
   players Player[]
+  homeGames Game[] @relation("home_team")
+  awayGames Game[] @relation("away_team")
+
 }
 
 model Player{
@@ -61,8 +64,14 @@ model Game{
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
+  home_team Team @relation("home_team", fields: [home_team_id], references: [id])
+  away_team Team @relation("away_team", fields: [away_team_id], references: [id])
+  
+
   @@map("games")
   gameDetails GameDetail[]
+  home_team_id String
+  away_team_id String
 }
 
 model GameDetail{
@@ -90,4 +99,14 @@ model Position {
 
   @@map("positions")
   players Player[]
+}
+
+model Score{
+  id String @id @default(uuid())
+  home_score Int
+  away_score Int
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("scores")
 }
