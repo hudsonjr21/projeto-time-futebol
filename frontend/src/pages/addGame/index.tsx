@@ -43,6 +43,7 @@ export default function addGame({ teamList}: PropsServer) {
   const [selectedPlayerNames, setSelectedPlayerNames] = useState({});
   const [homeTeam, setHomeTeam] = useState('');
   const [awayTeam, setAwayTeam] = useState('');
+  const [selectedGameTeams, setSelectedGameTeams] = useState<GameDetailProps[]>([]);
 
 
   async function loadPlayersByTeam(teamId) {
@@ -104,7 +105,14 @@ export default function addGame({ teamList}: PropsServer) {
       setScore('');
       setTeam('');
 
-      router.push(`/score?homeTeam=${homeTeam}&awayTeam=${awayTeam}`);
+      router.push({
+        pathname: '/score',
+        query: {
+          homeTeam: homeTeam,
+          awayTeam: awayTeam,
+          game_id: id,
+        },
+      });
 
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
@@ -146,10 +154,18 @@ export default function addGame({ teamList}: PropsServer) {
       // Buscar os nomes dos times a partir dos IDs
       const homeTeamName = teamList.find(team => team.id === queryHome)?.name || '';
       const awayTeamName = teamList.find(team => team.id === queryAway)?.name || '';
+      
       setHomeTeam(homeTeamName);
       setAwayTeam(awayTeamName);
+
+      const homeTeamId = queryHome as string;
+      const awayTeamId = queryAway as string;
+
+      // Filtrar a lista de times para incluir apenas os times associados ao jogo
+      const filteredTeams  = teamList.filter(team => team.id === homeTeamId || team.id === awayTeamId);
+      setSelectedGameTeams(filteredTeams);
     }
-  }, [router.query]);
+  }, [router.query, teamList]);
 
   return (
     <>
@@ -164,7 +180,7 @@ export default function addGame({ teamList}: PropsServer) {
           <h3>JOGO N° {numberGame} - {day}</h3>
           <h1> {homeTeam} x {awayTeam}</h1>
 
-          <form className={styles.form} >
+          <form className={styles.form}>
 
             <select
               value={team}
@@ -173,7 +189,7 @@ export default function addGame({ teamList}: PropsServer) {
               }}
             >
               <option value="">Selecione um time...</option>
-              {teamList.map((team) => {
+              {selectedGameTeams.map((team) => {
                 return (
                   <option key={team.id} value={team.id}>
                     {team.name}

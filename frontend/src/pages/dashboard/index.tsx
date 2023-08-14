@@ -125,7 +125,7 @@ export default function Dashboard({ games }: HomeProps){
             <section  key={gameDetail.id} className={styles.orderItem}> 
               <button onClick={ () => handleOpenModalView(gameDetail.id) }>
                 <div className={styles.tag}></div>
-                <span>Dia do Jogo {formatDate(gameDetail.day as string)}</span>
+                <span>Jogo n° {gameDetail.numberGame} - Dia: {formatDate(gameDetail.day as string)}</span>
               </button>
             </section>
           ))}

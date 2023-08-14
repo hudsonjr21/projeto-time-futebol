@@ -5,25 +5,16 @@ import styles from './styles.module.scss'
 import { setupAPIClient } from '../../services/api'
 import { toast } from 'react-toastify'
 import { canSSRAuth } from '../../utils/canSSRAuth'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router'  
 
-type GameDetailProps = {
-    id: string;
-    name: string;
-  };
-  
-interface PropsServer {
-    teamList: GameDetailProps[];
-}
-  
-
-export default function Score({ teamList}: PropsServer){
+export default function Score(){
     const router = useRouter();
 
     const [homeScore, setHomeScore] = useState('')
     const [awayScore, setAwayScore] = useState('');
     const [homeTeam, setHomeTeam] = useState('');
     const [awayTeam, setAwayTeam] = useState('');
+    const [id, setId] = useState('');
 
 async function handleAdd() {
     try {
@@ -32,6 +23,7 @@ async function handleAdd() {
       const data = {
         homeScore: parseInt(homeScore),
         awayScore: parseInt(awayScore),
+        game_id: id,
       };
   
       await apiClient.post('/score', data);
@@ -58,18 +50,21 @@ async function handleAdd() {
       awayTeam: queryAway,
     } = query;
 
-    if (queryHome && queryAway) {
-        // setNumberGame(queryNumberGame as string);
-        // setDay(formatDate(queryDay as string));
-        // setId(queryId as string);
-  
-        // Buscar os nomes dos times a partir dos IDs
-        const homeTeamName = teamList.find(team => team.id === queryHome)?.name || '';
-        const awayTeamName = teamList.find(team => team.id === queryAway)?.name || '';
-        setHomeTeam(homeTeamName);
-        setAwayTeam(awayTeamName);
-      }
-    }, [router.query]);
+    const homeTeamValue = typeof queryHome === 'string' ? queryHome : '';
+    const awayTeamValue = typeof queryAway === 'string' ? queryAway : '';
+
+    setHomeTeam(homeTeamValue);
+    setAwayTeam(awayTeamValue);
+  }, [router.query]);
+
+  useEffect(() => {
+    const id = router.query.game_id;
+
+    setId(id as string);
+
+    console.log('teste2', id)
+    console.log('game_id:', router.query.game_id);
+  }, [router.query.game_id]);
 
   return(
     <>
@@ -80,10 +75,15 @@ async function handleAdd() {
       <Header/>
 
       <main className={styles.container}>
-        <h1>Placar do Jogo {homeTeam} {awayTeam}</h1>
+        <h1>Placar do Jogo</h1>
+
+        <div className={styles.containerLabel}>
+            <h3 className={styles.h3Home}>{homeTeam}</h3> 
+            <h3 className={styles.h3Away}>{awayTeam}</h3>
+        </div>
 
         <form className={styles.form}>
-        
+    
         <div className={styles.inputGroup}>
         <input 
           type="number" 
@@ -116,13 +116,7 @@ async function handleAdd() {
 }
 
 export const getServerSideProps = canSSRAuth(async (ctx) => {
-    const apiClient = setupAPIClient(ctx);
-  
-    const teamResponse = await apiClient.get('/team');
-  
     return {
-      props: {
-        teamList: teamResponse.data,
-      },
+      props: {},
     };
   });

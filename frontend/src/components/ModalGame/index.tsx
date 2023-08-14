@@ -25,6 +25,11 @@ export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
     }
   };
 
+  // Encontra o detalhe do jogo correto com base no game_id
+  const gameDetail = game.find(detail => detail.game.id === game[0].game_id);
+  if (!gameDetail) {
+    return null; // Não há detalhes do jogo para mostrar
+  }
   return(
    <Modal
     isOpen={isOpen}
@@ -43,23 +48,20 @@ export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
 
     <div className={styles.container}>
 
-      <h2>Detalhes do Jogo</h2>
-      <span className={styles.table}>
-        <strong>{game[0].game.numberGame}</strong> 
-      </span>
+    <h2>Detalhes do Jogo</h2>
+        <span className={styles.table}>
+          <strong>{gameDetail.game.numberGame}</strong>
+        </span>
 
-      {game.map( gameDetail => (
-        <section key={gameDetail.id} className={styles.containerItem}>
+        <div className={styles.containerItem}>
           <div className={styles.playerNameContainer}>
             {Array.from({ length: gameDetail.score }).map((_, index) => (
               <IoMdFootball key={index} color="#FFF" size={24} />
             ))}
             <strong>{gameDetail.player.name}</strong>
           </div>
-        </section>
-      ))}
-    </div>
-
-   </Modal>
-  )
+        </div>
+      </div>
+    </Modal>
+  );
 }

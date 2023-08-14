@@ -70,6 +70,7 @@ model Game{
 
   @@map("games")
   gameDetails GameDetail[]
+  scores Score[]
   home_team_id String
   away_team_id String
 }
@@ -105,8 +106,12 @@ model Score{
   id String @id @default(uuid())
   home_score Int
   away_score Int
+  
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
 
+   game Game @relation(fields: [game_id], references: [id])
+
   @@map("scores")
+  game_id String
 }

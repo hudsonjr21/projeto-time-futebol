@@ -8,6 +8,7 @@ class ListScoreService{
         id: true,
         home_score: true,
         away_score: true,
+        game_id: true,
       }
     })
 

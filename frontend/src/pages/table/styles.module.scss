@@ -1,0 +1,44 @@
+.container{
+    max-width: 720px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+  .container h1{
+    color: #fff;
+    margin-top: 5px;
+    text-align: center;
+  }
+
+.gameTable {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+  
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+  
+    th {
+      background-color: #f2f2f2;
+      border-bottom: 2px solid #ddd;
+      font-weight: bold;
+    }
+  
+    td {
+      border-bottom: 1px solid #ddd;
+  
+      &:nth-child(2) {
+        font-weight: bold;
+      }
+    }
+  
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+  

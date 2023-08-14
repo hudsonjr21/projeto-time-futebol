@@ -33,6 +33,11 @@ export default function Game({ teamList }: TeamProps) {
         toast.error("Preencha todos os campos!");
         return;
       }
+
+      if (homeTeam === awayTeam) {
+        toast.warning("Os times selecionados devem ser diferentes!");
+        return;
+      }
   
       const data = {
         numberGame: parseInt(numberGame), // Converter para inteiro
