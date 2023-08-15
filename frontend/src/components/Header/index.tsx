@@ -26,6 +26,14 @@ export function Header(){
             <a>Tabela</a>
           </Link>
 
+          <Link href="/raking" legacyBehavior>
+            <a>Classificação</a>
+          </Link>
+
+          <Link href="/playerScorer" legacyBehavior>
+            <a>Artilheiros</a>
+          </Link>
+
           <Link href="/game" legacyBehavior>
             <a>Jogo</a>
           </Link>   

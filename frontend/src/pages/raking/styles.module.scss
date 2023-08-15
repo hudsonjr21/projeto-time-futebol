@@ -12,38 +12,32 @@
     text-align: center;
   }
 
-.gameTable {
+
+.standingsTable {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #ddd;
     margin-top: 20px;
+    font-size: 14px;
   
     th, td {
-      padding: 10px;
+      border: 1px solid #ddd;
+      padding: 8px;
       text-align: center;
+    }
+    td {
+        color: #fff;
     }
   
     th {
       background-color: #f2f2f2;
-      border-bottom: 2px solid #ddd;
       font-weight: bold;
     }
   
-    td {
-      border-bottom: 1px solid #ddd;
-      color: #fff;
-  
-      &:nth-child(3) {
-        font-weight: bold;
-      }
+    tr:hover {
+      background-color: #ddd;
     }
   
-    tr:last-child td {
-      border-bottom: none;
+    th:first-child, td:first-child {
+      text-align: left;
     }
-  }
-
-  .thSize{
-    width: 10px;
-    text-align: center;
   }
