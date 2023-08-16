@@ -5,6 +5,7 @@ class ListPlayerService{
 
     const players = await prismaClient.player.findMany({
       select:{
+        id: true,
         name: true, 
         profile: true, 
         position_id: true, 

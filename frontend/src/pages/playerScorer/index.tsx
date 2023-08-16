@@ -8,7 +8,13 @@ type Player = {
   id: string;
   name: string;
   team: string;
+  team_id?: string;
 };
+
+type Team = {
+    id: string;
+    name: string;
+  };
 
 type GameDetail = {
   game_id: string;
@@ -26,46 +32,57 @@ export default function TopScorers() {
 
   useEffect(() => {
     async function fetchTopScorers() {
-      const apiClient = setupAPIClient();
-      try {
-        const playersResponse = await apiClient.get('/player');
-        const gameDetailsResponse = await apiClient.get('/game/detail');
-
-        const playersList: Player[] = playersResponse.data;
-        const gameDetailsList: GameDetail[] = gameDetailsResponse.data;
-
-        console.log('Players List:', playersList);
-        console.log('Game Details List:', gameDetailsList);
-
-        const playerStats: { [playerId: string]: PlayerStats } = {};
-
-        gameDetailsList.forEach((gameDetail) => {
-          const playerId = gameDetail.player_id;
-          const goals = gameDetail.score; 
-
-          if (!playerStats[playerId]) {
-            const player = playersList.find((player) => player.id === playerId);
-            if (player) {
-              playerStats[playerId] = {
-                player,
-                goals: 0,
-              };
+        const apiClient = setupAPIClient();
+      
+        try {
+          // Buscar detalhes dos jogos
+          const gameDetailsResponse = await apiClient.get('/game/detail');
+          const gameDetails: GameDetail[] = gameDetailsResponse.data;
+      
+          // Buscar informações dos jogadores
+          const playerResponse = await apiClient.get('/player');
+          const players: Player[] = playerResponse.data;
+      
+          // Buscar informações dos times
+          const teamResponse = await apiClient.get('/team');
+          const teams: Team[] = teamResponse.data;
+      
+          // Calcular os gols de cada jogador
+          const playerGoals: { [playerId: string]: number } = {};
+      
+          // Loop pelos detalhes dos jogos para calcular os gols por jogador
+          gameDetails.forEach((detail) => {
+            const { player_id, score } = detail;
+            if (player_id in playerGoals) {
+              playerGoals[player_id] += score;
+            } else {
+              playerGoals[player_id] = score;
             }
-          }
-
-          console.log('Player ID:', playerId);
-          console.log('Goals:', goals);
-
-          playerStats[playerId].goals += goals;
-        });
-
-        const sortedTopScorers = Object.values(playerStats).sort((a, b) => b.goals - a.goals);
-
-        setTopScorers(sortedTopScorers);
-      } catch (error) {
-        console.error('Erro ao buscar artilheiros:', error);
+          });
+      
+          // Mapear os artilheiros com nome, time e gols
+          const topScorersData: PlayerStats[] = Object.keys(playerGoals).map((playerId) => {
+            const player = players.find((p) => p.id === playerId);
+            const teamId = player.team_id; // Obtém o team_id do jogador
+            const team = teams.find((t) => t.id === teamId); // Encontra o time correspondente usando o team_id
+            const teamName = team ? team.name : 'Time Desconhecido'; // Usa o nome do time ou 'Time Desconhecido'
+            const playerName = player ? player.name : 'Jogador Desconhecido'; // Usa o nome do jogador ou 'Jogador Desconhecido'
+            
+            return {
+              player: { id: playerId, name: playerName, team: teamName }, // Cria um objeto de jogador com nome e time
+              goals: playerGoals[playerId], // Obtém o número de gols do jogador
+            };
+          });
+      
+          // Ordenar os artilheiros por número de gols
+          topScorersData.sort((a, b) => b.goals - a.goals);
+      
+          // Atualizar o estado com os dados dos artilheiros
+          setTopScorers(topScorersData);
+        } catch (error) {
+          console.error('Erro ao buscar artilheiros:', error);
+        }
       }
-    }
 
     fetchTopScorers();
   }, []);
@@ -79,24 +96,22 @@ export default function TopScorers() {
         <Header />
 
         <main className={styles.container}>
-          <h1>Artilheiros</h1>
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
+          <h1>Artilharia</h1>
+          <div className={styles.standings}>
+            <table className={styles.standingsTable}>
               <thead>
                 <tr>
-                  <th>Posição</th>
-                  <th>Jogador</th>
+                  <th>Raking</th>
                   <th>Time</th>
                   <th>Gols</th>
                 </tr>
               </thead>
               <tbody>
-                {topScorers.map((playerStat, index) => (
-                  <tr key={playerStat.player.id}>
-                    <td>{index + 1}</td>
-                    <td>{playerStat.player.name}</td>
-                    <td>{playerStat.player.team}</td>
-                    <td>{playerStat.goals}</td>
+                {topScorers.map((playerStats, index) => (
+                  <tr key={playerStats.player.id}>
+                    <td>{index + 1} - {playerStats.player.name}</td>
+                    <td>{playerStats.player.team}</td>
+                    <td>{playerStats.goals}</td>
                   </tr>
                 ))}
               </tbody>
