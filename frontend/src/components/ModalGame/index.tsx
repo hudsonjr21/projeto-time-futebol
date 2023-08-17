@@ -1,14 +1,20 @@
 import Modal from 'react-modal';
 import styles from './style.module.scss';
-
+import { useEffect, useState } from 'react';
 import { FiX } from 'react-icons/fi'
 import { IoMdFootball} from 'react-icons/io'
 import { GameDetailProps } from '@/src/pages/dashboard';
+import { setupAPIClient } from '@/src/services/api';
 
 interface ModalGameProps{
   isOpen: boolean;
   onRequestClose: () => void;
   game: GameDetailProps[];
+}
+
+function formatDate(dateString: string): string {
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
 }
 
 export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
@@ -25,11 +31,38 @@ export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
     }
   };
 
-  // Encontra o detalhe do jogo correto com base no game_id
+  const [teamNames, setTeamNames] = useState({ homeTeamName: '', awayTeamName: '' });
+
+  useEffect(() => {
+    const fetchTeamsDetails = async () => {
+      const apiClient = setupAPIClient();
+      try {
+        const teamResponse = await apiClient.get(`/team`);
+        const teams = teamResponse.data;
+
+        const homeTeam = teams.find((team) => team.id === game[0].game.home_team_id);
+        const awayTeam = teams.find((team) => team.id === game[0].game.away_team_id);
+
+        setTeamNames({
+          homeTeamName: homeTeam ? homeTeam.name : 'Time não encontrado',
+          awayTeamName: awayTeam ? awayTeam.name : 'Time não encontrado',
+        });
+      } catch (error) {
+        console.error('Erro ao buscar detalhes dos times:', error);
+      }
+    };
+
+    if (isOpen) {
+      fetchTeamsDetails();
+    }
+  }, [isOpen, game]);
+
+
   const gameDetail = game.find(detail => detail.game.id === game[0].game_id);
   if (!gameDetail) {
-    return null; // Não há detalhes do jogo para mostrar
+    return null;
   }
+
   return(
    <Modal
     isOpen={isOpen}
@@ -40,17 +73,19 @@ export function ModalGame({ isOpen, onRequestClose, game }: ModalGameProps){
     <button
     type="button"
     onClick={onRequestClose}
-    className="react-modal-close"
-    style={{ background: 'transparent', border:0 }}
+    className={styles.buttonFix}
     >
       <FiX size={30} color="#f34748" />
     </button>
 
     <div className={styles.container}>
 
-    <h2>Detalhes do Jogo</h2>
+    <h3>
+      Jogo n° {gameDetail.game.numberGame} - {formatDate(gameDetail.game.day as string)}
+    </h3>
+    <h2>{teamNames.homeTeamName} x {teamNames.awayTeamName}</h2>
         <span className={styles.table}>
-          <strong>{gameDetail.game.numberGame}</strong>
+          <strong>N°{gameDetail.game.numberGame}</strong>
         </span>
 
         <div className={styles.containerItem}>

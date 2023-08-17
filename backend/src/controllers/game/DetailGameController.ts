@@ -5,7 +5,7 @@ import { DetailGameService } from '../../services/game/DetailGameSerivce'
 
 class DetailGameController{
   async handle(req: Request, res: Response){
-    const game_id = req.query.order_id as string;
+    const game_id = req.query.game_id as string;
 
     const detailGameService = new DetailGameService();
 

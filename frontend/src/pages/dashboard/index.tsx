@@ -39,6 +39,8 @@ export type GameDetailProps = {
     id: string;
     day: string | number;
     numberGame: string | number;
+    home_team_id: string;
+    away_team_id: string;
   }
 }
 
@@ -63,27 +65,16 @@ export default function Dashboard({ games }: HomeProps){
    
      const apiClient = setupAPIClient(); 
 
-     const response = await apiClient.get('/game/detail?game_id=${id}', {
-      
+     const response = await apiClient.get('/game/detail', {
+      params:{
+        game_id: id,
+       } 
      })
 
      setModalGameDetail(response.data);
      setModalVisible(true);
 
   }
-
-
-  // async function handleFinishItem(id: string){
-  //   const apiClient = setupAPIClient();
-  //   await apiClient.put('/order/finish', {
-  //     order_id: id,
-  //   })
-
-  //   const response = await apiClient.get('/orders');
-
-  //   setOrderList(response.data);
-  //   setModalVisible(false);
-  // }
 
 
   async function handleRefreshOrders(){
