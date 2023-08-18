@@ -59,11 +59,8 @@ async function handleAdd() {
 
   useEffect(() => {
     const id = router.query.game_id;
-
     setId(id as string);
 
-    console.log('teste2', id)
-    console.log('game_id:', router.query.game_id);
   }, [router.query.game_id]);
 
   return(

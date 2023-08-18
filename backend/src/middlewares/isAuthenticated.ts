@@ -3,6 +3,7 @@ import { verify } from 'jsonwebtoken'
 
 interface Payload{
   sub: string;
+  role: 'admin' | 'user';
 }
 
 export function isAuthenticated(
@@ -23,13 +24,14 @@ export function isAuthenticated(
   
   try{
     //Validar esse token.
-    const { sub } = verify(
+    const { sub, role } = verify(
       token,
       process.env.JWT_SECRET
     ) as Payload;
 
     //Recuperar o id do token e colocar dentro de uma variável user_id dentro do req.
     req.user_id = sub;
+    req.user_role = role;
     
     return next();
 

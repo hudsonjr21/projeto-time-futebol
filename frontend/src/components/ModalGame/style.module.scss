@@ -11,20 +11,19 @@
 
 .containerItem {
   display: flex;
-  align-items: center;
   margin: 1rem 0;
   font-size: 1.2rem; 
 
   svg {
-    margin-right: 8px; 
+    margin-right: 4px; 
   }
 
   strong{
     color: var(--green-900)
   }
+
   .playerNameContainer {
-    display: flex; /* Adiciona flex para alinhar os ícones e o texto do jogador */
-    align-items: center; /* Alinha verticalmente os ícones e o texto do jogador */
+    display: flex; 
   }
 
 }
@@ -63,4 +62,31 @@
 .buttonFix {
   background: transparent;
   border: 0px;
+}
+
+.buttonFix {
+  background: transparent;
+  border: 0px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px; /* Ajuste a distância superior conforme necessário */
+  right: 10px; /* Ajuste a distância à direita conforme necessário */
+}
+
+.playerNameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.playerRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.playerIconRow {
+  display: flex;
+  margin-right: 10px;
 }

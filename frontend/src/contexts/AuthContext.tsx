@@ -94,7 +94,8 @@ export function AuthProvider({ children }: AuthProviderProps){
       const { id, name, token, cellNumber } = response.data;
 
       setCookie(undefined, '@nextauth.token', token, {
-        maxAge: 60 * 60 * 24 * 30, // Expirar em 1 mes
+        maxAge: 60 * 60 * 24,
+        // maxAge: 60 * 60 * 24 * 30, // Expirar em 1 mes
         path: "/" // Quais caminhos terao acesso ao cookie
       })
 
