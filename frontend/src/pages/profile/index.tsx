@@ -86,17 +86,19 @@ export default function Profile() {
   }
 
   return (
-    <>
-      <div className={styles.container}>
+  <>
       <Head>
-        <title>Meu Perfil - JOGOS ENTRE AMIGOS</title>
+      <title>Meu Perfil - JOGOS ENTRE AMIGOS</title>
       </Head>
       <div>
-      <Header />
-      <main className={styles.container}> </main></div>
-      <div className={styles.login}>
-        <h1>Meu Perfil</h1>
-        {isEditing ? (
+        <Header />
+
+        <main className={styles.container}>
+          <h1>Meu Perfil</h1>
+
+          <div className={styles.login}>
+
+          {isEditing ? (
           <>
             <Input
               type="text"
@@ -142,8 +144,9 @@ export default function Profile() {
             <Button onClick={() => setIsEditing(true)}>Editar Perfil</Button>
           </>
         )}
+        </div>
+        </main>
       </div>
-    </div>
     </>
   );
 }
