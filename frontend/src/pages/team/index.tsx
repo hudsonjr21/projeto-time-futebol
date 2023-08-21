@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 
 import { canSSRAuth } from '../../utils/canSSRAuth'
 import { FiUpload } from 'react-icons/fi'
+import { canAccessAdminRoute } from '@/src/utils/canAccessAdminRoute'
 
 export default function Team(){
   const [name, setName] = useState('')
@@ -119,11 +120,8 @@ export default function Team(){
   )
 }
 
-
-export const getServerSideProps = canSSRAuth(async (ctx) => {
-
+export const getServerSideProps = canAccessAdminRoute(async (ctx) => {
   return {
-    props: {}
-  }
-
-})
+    props: {},
+  };
+});

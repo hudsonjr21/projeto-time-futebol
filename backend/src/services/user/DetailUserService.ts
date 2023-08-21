@@ -12,6 +12,7 @@ class DetailUserService{
         name: true,
         email: true,
         cellNumber: true,
+        role: true,
       }
     })
 

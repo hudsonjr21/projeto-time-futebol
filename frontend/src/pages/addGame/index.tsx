@@ -7,6 +7,7 @@ import { setupAPIClient } from '../../services/api';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { IoMdFootball } from 'react-icons/io';
+import { canAccessAdminRoute } from '@/src/utils/canAccessAdminRoute';
 
 type GameDetailProps = {
   id: string;
@@ -254,7 +255,7 @@ export default function addGame({ teamList}: PropsServer) {
   );
 }
 
-export const getServerSideProps = canSSRAuth(async (ctx) => {
+export const getServerSideProps = canAccessAdminRoute(async (ctx) => {
   const apiClient = setupAPIClient(ctx);
 
   const teamResponse = await apiClient.get('/team');

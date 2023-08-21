@@ -1,0 +1,75 @@
+.container {
+    max-width: 720px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+  
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+  
+  .container h1 {
+    color: var(--white);
+  }
+  
+  
+  .buttonEdit {
+    border-radius: 0.3rem;
+    height: 40px;
+    border: 0;
+    background-color: var(--green-900);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-700);
+    cursor: pointer;
+  }
+  
+  
+.containerCenter{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: var(--gray-900);
+  }
+  
+  .login{
+    margin-top: 2rem;
+    width: 600px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    background-color: var(--dark-900);
+    border-radius: 0.3rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    color: var(--white);
+    margin-top: 60px;
+  
+    p {
+      margin-bottom: 0.5rem;
+      font-size: 18px;
+    }
+  
+    h1{
+      color: var(--white);
+      padding-bottom: 1rem;
+    }
+  
+  }
+
+  .buttonContainer {
+    margin-top: 0.5rem; /* Adicione a margem acima dos botões */
+    
+    /* Estilos para centralizar os botões horizontalmente */
+    display: flex;
+    justify-content: space-between;
+    
+    Button {
+        width: calc(50% - 0.25rem); /* Distribuir os botões igualmente com uma margem de 0.25rem entre eles */
+        margin-right: 1rem; /* Adicionar margem à direita do botão */
+      }
+  }
+  

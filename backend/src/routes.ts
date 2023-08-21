@@ -23,6 +23,7 @@ import { ListPlayersController } from './controllers/player/ListPlayersControlle
 
 import uploadConfig from './config/multer'
 import multer from 'multer';
+import { UpdateUserController } from './controllers/user/UpdateUserController';
 
 const router = Router();
 
@@ -32,6 +33,7 @@ const upload = multer(uploadConfig.upload("./tmp"));
 router.post('/users', new CreateUserController().handle)
 router.post('/session', new AuthUserController().handle)
 router.get('/me', isAuthenticated,  new DetailuserController().handle )
+router.put('/user', isAuthenticated, new UpdateUserController().handle )
 
 //-- ROTAS TEAM
 router.post('/team', isAuthenticated, upload.single('file'), new CreateTeamController().handle )

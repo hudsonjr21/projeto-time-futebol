@@ -1,14 +1,14 @@
-import { useContext, useState  } from 'react'
-import styles from './styles.module.scss'
-import Link from 'next/link'
+import { useContext, useState } from 'react';
+import styles from './styles.module.scss';
+import Link from 'next/link';
 
-import { FiLogOut } from 'react-icons/fi'
+import { FiLogOut, FiUser } from 'react-icons/fi';
 
-import { AuthContext } from '../../contexts/AuthContext'
+import { AuthContext } from '../../contexts/AuthContext';
 
-export function Header(){
+export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { signOut } = useContext(AuthContext)
+  const { signOut, isAdmin } = useContext(AuthContext);
 
   return (
     <header className={styles.headerContainer}>
@@ -43,28 +43,33 @@ export function Header(){
             )}
           </div>
 
-
-          <div
-            className={styles.dropdownContainer}
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <a>Cadastro</a>
-            {isDropdownOpen && (
-              <div className={styles.dropdownMenu}>
-                <Link href="/game" legacyBehavior>
-                  <a>Jogo</a>
-                </Link>
-                <Link href="/team" legacyBehavior>
-                  <a>Time</a>
-                </Link>
-                <Link href="/player" legacyBehavior>
-                  <a>Jogador</a>
-                </Link>
-              </div>
-            )}
-          </div>
-
+          {isAdmin && (
+            <div
+              className={styles.dropdownContainer}
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <a>Cadastro</a>
+              {isDropdownOpen && (
+                <div className={styles.dropdownMenu}>
+                  <Link href="/game" legacyBehavior>
+                    <a>Jogo</a>
+                  </Link>
+                  <Link href="/team" legacyBehavior>
+                    <a>Time</a>
+                  </Link>
+                  <Link href="/player" legacyBehavior>
+                    <a>Jogador</a>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+          <button>
+          <Link href="/profile" legacyBehavior>
+            <FiUser color="#FFF" size={24} />
+            </Link>
+          </button>
           <button onClick={signOut}>
             <FiLogOut color="#FFF" size={24} />
           </button>

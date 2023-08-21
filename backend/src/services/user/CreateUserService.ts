@@ -35,12 +35,14 @@ class CreateUserService{
         email: email,
         password: passwordHash,
         cellNumber: cellNumber,
+        role: 'user',
       },
       select:{
         id: true,
         name: true,       
         email: true,
         cellNumber: true,
+        role: true,
       }
     })
 
